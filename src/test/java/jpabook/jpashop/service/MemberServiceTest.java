@@ -1,52 +1,50 @@
 package jpabook.jpashop.service;
 
-import jakarta.persistence.EntityManager;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.repository.MemberRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-class MemberServiceTest {
+public class MemberServiceTest {
 
     @Autowired MemberService memberService;
     @Autowired MemberRepository memberRepository;
-    @Autowired EntityManager em;
 
     @Test
-    public void 회원가입() throws Exception{
+    public void 회원가입() throws Exception {
 
+        //Given
         Member member = new Member();
-        member.setName("Kim");
+        member.setName("kim");
 
-        Long savedId = memberService.join(member);
+        //When
+        Long saveId = memberService.join(member);
 
-        em.flush();
-        Assertions.assertEquals(member, memberRepository.findOne(savedId));
+        //Then
+        assertEquals(member, memberRepository.findOne(saveId));
     }
 
     @Test
-    public void 중복_회원_예외() throws Exception{
-
+    public void 중복_회원_예외() throws Exception {
+        //Given
         Member member1 = new Member();
-        member1.setName("kim1");
+        member1.setName("kim");
 
         Member member2 = new Member();
-        member2.setName("kim1");
+        member2.setName("kim");
 
+        //When
         memberService.join(member1);
 
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            memberService.join(member2);
-        });
+        //Then
 
+        //IllegalStateException 예외가 발생하지 않으면 테스트 실패
+        assertThrows(IllegalStateException.class, () -> memberService.join(member2));
     }
-
 }
